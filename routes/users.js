@@ -1,8 +1,12 @@
 var express = require('express');
+var mongoose = require('mongoose');
 var router = express.Router();
 
+//连接数据库
+var db = mongoose.connect('mongodb://localhost/chihuo');
+
 /* GET users listing. */
-router.get('/', function (req, res, next) {
+router.get('/', function(req, res, next) {
     res.send('halo');
 });
 
@@ -19,12 +23,12 @@ const resData = {
 };
 
 /** /users/queryDuoDuo  get **/
-router.post('/queryDuoDuo', function (req, res, next) {
+router.post('/queryDuoDuo', function(req, res, next) {
     res.send(resData);
 });
 
 /** /users/age  post **/
-router.get('/age', function (req, res, next) {
+router.get('/age', function(req, res, next) {
     res.send(resData);
 });
 
