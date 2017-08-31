@@ -49,7 +49,6 @@ router.post('/addUser', function (req, res, next) {
     MongoClient.connect(DB_CONN_STR, function (err, db) {
         insertData(db, req, function (result) {
             // 返回的操作 mongodb的数据
-            console.log(result);
             db.close();
         });
     });
@@ -57,9 +56,10 @@ router.post('/addUser', function (req, res, next) {
 })
 
 /** /users/getUsers  get */
-router.get('/getUser', function (req, res, next) {
+router.post('/getUser', function (req, res, next) {
+    let id = Number(req.body.id);
     MongoClient.connect(DB_CONN_STR, function (err, db) {
-        queryUsers(db, function (result) {
+        queryUsers(db, id, function (result) {
             // 返回数据
             // res.status(200);
             // res.json(result);
@@ -71,7 +71,6 @@ router.get('/getUser', function (req, res, next) {
 })
 
 /** /users/delUsers post */
-
 router.post('/delUser', function (req, res, next) {
     let delName = req.body.name;
     MongoClient.connect(DB_CONN_STR, function (err, db) {
@@ -86,6 +85,7 @@ var insertData = function (db, req, callback) {
     // 定义表 site
     var collection = db.collection('user_base');
     // 表的操作 insert
+    req.id = parseInt(new Date().getTime());
     collection.insert(req, function (err, result) {
         if (err) {
             console.log('Error:' + err);
@@ -95,10 +95,11 @@ var insertData = function (db, req, callback) {
     });
 }
 
-var queryUsers = function (db, callback) {
+var queryUsers = function (db, id, callback) {
+    let queryInfo = !!id ? {id: id} : {};
     // 定义表 site
     var collection = db.collection('user_base');
-    collection.find({}).toArray(function (err, result) {
+    collection.find(queryInfo).toArray(function (err, result) {
         if (err) {
             console.log('Error:' + err);
             return;
@@ -108,10 +109,11 @@ var queryUsers = function (db, callback) {
 }
 
 var delUser = function (db, delName, callback) {
-    console.log(delName);
     // 定义表 site
     var collection = db.collection('user_base');
-    collection.remove({name: delName}, function (err, result) {
+    collection.remove({
+        name: delName
+    }, function (err, result) {
         if (err) {
             console.log('Error:' + err);
             return;
